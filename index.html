@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小妍</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #033363;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            font-family: "微软雅黑", sans-serif;
+        }
+        /* 窗口样式（与图片完全匹配） */
+        .care-window {
+            position: absolute;
+            padding: 7px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            animation: float 10s ease-in-out infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        /* 窗口左上角的“提示”标识 */
+        .care-window .tip-badge {
+            background: #fff;
+            border: 1px solid #ad003a;
+            color: #ff4081;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .care-window .tip-badge::before {
+            content: "💖";
+            font-size: 10px;
+        }
+        /* 浮动动画（模拟图片的堆叠动态） */
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(18px, -20px) rotate(2deg); }
+            50% { transform: translate(0, -30px) rotate(0deg); }
+            75% { transform: translate(-15px, -20px) rotate(-2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .click-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="click-tip">点击有惊喜~</div>
+
+    <script>
+        // 150条丰富的关心文案（覆盖日常、情绪、生活细节）
+        const careTexts = [
+            "记得好好吃饭", "天冷多穿件厚衣", "别太累啦，歇会儿",
+            "记得多喝温热水", "早点休息，别熬夜", "今天过得开心吗",
+            "要好好爱自己", "我偷偷想你啦", "期待下一次见面",
+            "记得认真护肤", "祝你金榜题名", "要珍惜每一刻",
+            "多吃点喜欢的零食", "出门记得带伞", "别给自己太大压力",
+            "累了就放松一下", "要天天开心呀", "记得吃早餐",
+            "注意保暖哦", "工作再忙也要休息", "你今天超好看",
+            "照顾好自己呀", "别忘记吃水果", "有我在呢",
+            "今天也要元气满满", "别委屈自己哦", "睡前泡个脚吧",
+            "记得涂护手霜", "路上注意安全", "不开心就和我说",
+            "多出去走走呀", "要好好照顾身体", "别让自己着凉啦",
+            "今天的你也很棒", "记得按时吃药", "我一直在哦",
+            "别太想念我啦", "记得补充维生素", "保持好心情",
+            "累了就睡一觉", "要好好吃饭哦", "天气好就去晒太阳",
+            "别熬夜啦，对身体不好", "你真的很优秀", "记得带充电宝",
+            "别忘记带钥匙", "多喝热乎的东西", "别太累着自己",
+            "今天也要甜甜的", "记得吃午饭", "晚上早点回家",
+            "要好好爱自己呀", "别担心，一切都会好的", "穿舒服的鞋子",
+            "多听听喜欢的歌", "不开心就吃点甜的", "记得给手机充电",
+            "你笑起来超好看", "别皱眉头啦", "记得吃晚餐",
+            "工作再忙也要吃饭", "要照顾好自己哦", "别给自己太多烦恼",
+            "累了就歇一歇", "今天也要好好生活", "记得带口罩",
+            "别忘记喝水哦", "我超喜欢你的", "要天天都有好心情",
+            "记得多运动运动", "别让自己太辛苦", "今天也要加油呀",
+            "记得好好睡觉", "有心事就和我讲", "别着凉啦",
+            "多吃点蔬菜", "你真的很可爱", "记得放松眼睛",
+            "别太累啦，爱你", "今天也要元气满满哦", "记得吃点热的",
+            "出门注意安全呀", "别忘记带纸巾", "要好好照顾自己",
+            "累了就靠靠我", "今天的你也超棒", "记得好好吃饭哦",
+            "别熬夜啦，晚安", "我一直在你身边", "要天天开心哦",
+            "别委屈自己啦", "记得多喝热水", "你是最棒的",
+            "照顾好自己呀", "别太累啦，爱你哟", "今天也要甜甜的呀",
+            "午后记得眯一会儿", "别忘记涂唇膏", "你穿搭超好看",
+            "多喝热粥暖暖胃", "别太焦虑啦", "周末好好放松",
+            "记得给绿植浇水", "你认真的样子超迷人", "别让坏情绪影响你",
+            "记得带围巾哦", "累了就吃颗糖", "今天的风很温柔",
+            "别忘记带耳机", "要多微笑呀", "你说话的声音超好听",
+            "别太节俭啦，对自己好点", "记得剪指甲", "你写字超好看",
+            "别总熬夜啦，早点睡", "要多和朋友聚聚", "你煮的饭超香",
+            "别忘记关窗户", "要好好对待自己", "你唱歌超好听",
+            "别太拼啦，适当休息", "记得买喜欢的东西", "你超有魅力的"
+        ];
+
+        // 图片同款马卡龙色系
+        const windowColors = [
+            "#FFD1DC", "#E6E6FA", "#C8E6C9", "#FFF9C4", 
+            "#B3E5FC", "#FFCCBC", "#D1C4E9", "#F8BBD0",
+            "#C5CAE9", "#DCEDC8"
+        ];
+
+        // 点击生成100个窗口
+        document.body.addEventListener('click', function() {
+            document.querySelector('.click-tip').style.display = 'none';
+            
+            for (let i = 0; i < 100; i++) {
+                const windowEl = document.createElement('div');
+                windowEl.className = 'care-window';
+                // 插入“提示”标识+文案
+                windowEl.innerHTML = `
+                    <span class="tip-badge">小妍</span>
+                    ${careTexts[Math.floor(Math.random() * careTexts.length)]}
+                `;
+                // 随机样式配置
+                windowEl.style.backgroundColor = windowColors[Math.floor(Math.random() * windowColors.length)];
+                windowEl.style.left = Math.random() * 90 + '%';
+                windowEl.style.top = Math.random() * 90 + '%';
+                windowEl.style.animationDelay = Math.random() * 3 + 's';
+                windowEl.style.opacity = '1';
+                
+                document.body.appendChild(windowEl);
+
+                // 15秒后渐隐消失
+                setTimeout(() => {
+                    windowEl.style.opacity = '0';
+                    setTimeout(() => windowEl.remove(), 200);
+                }, 8000);
+            }
+        });
+    </script>
+</body>
+</html>
